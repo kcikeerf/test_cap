@@ -1,25 +1,38 @@
-upstream unicorn {
-  server unix:/opt/k12ke/cap/main/shared/tmp/sockets/unicorn.sock;
-}
+# -*- coding: utf-8 -*-
+worker_processes Integer(ENV["WEB_CONCURRENCY"] || 3)
+timeout 15
+preload_app true # 更新時ダウンタイム無し
 
-server {
-  listen 8080 default_server;
-  server_name cap.k12ke.com;
+app_path = '/var/www/nginx/capistrano_sample'
+app_shared_path = "#{app_path}/shared"
+working_directory "#{app_path}/current/"
 
-  access_log /opt/k12ke/cap/main/log/access.log;
-  error_log /opt/k12ke/cap/main/log/error.log;
+listen "#{app_shared_path}/tmp/sockets/unicorn.sock"
 
-  root /opt/k12ke/cap/;
+stdout_path "#{app_shared_path}/log/unicorn.stdout.log"
+stderr_path "#{app_shared_path}/log/unicorn.stderr.log"
 
-  client_max_body_size 100m;
-  error_page 404 /404.html;
-  error_page 500 502 503 504 /500.html;
-  try_files $uri/index.html $uri @unicorn;
+pid "#{app_shared_path}/tmp/pids/unicorn.pid"
 
-  location @unicorn {
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header Host $http_host;
-    proxy_pass http://unicorn;
-  }
-}
+# ログの出力
+stderr_path File.expand_path('log/unicorn.log', ENV['RAILS_ROOT'])
+stdout_path File.expand_path('log/unicorn.log', ENV['RAILS_ROOT'])
+
+before_fork do |server, worker|
+  Signal.trap 'TERM' do
+    puts 'Unicorn master intercepting TERM and sending myself QUIT instead'
+    Process.kill 'QUIT', Process.pid
+  end
+
+  defined?(ActiveRecord::Base) and
+    ActiveRecord::Base.connection.disconnect!
+end
+
+after_fork do |server, worker|
+  Signal.trap 'TERM' do
+    puts 'Unicorn worker intercepting TERM and doing nothing. Wait for master to send QUIT'
+  end
+
+  defined?(ActiveRecord::Base) and
+    ActiveRecord::Base.establish_connection
+end

@@ -1,8 +1,14 @@
 # config valid only for Capistrano 3.1
-lock '3.2.1'
+#lock '3.2.1'
+
+
 
 set :application, 'swtkCapTest'
 set :repo_url, 'git@github.com:sunsc/test_cap.git'
+
+set :user, "ubuntu"
+set :use_sudo, true
+set :sudo, "sudo -u ubuntu -i"
 
 set :deploy_to, '/opt/k12ke/cap'
 
@@ -29,8 +35,10 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
-      execute :mkdir, '-p', release_path.join('tmp')
-      execute :touch, release_path.join('tmp/restart.txt')
+      as "ubuntu" do
+      execute :sudo, :mkdir, '-p', release_path.join('tmp')
+      execute :sudo, :touch, release_path.join('tmp/restart.txt')
+      end
     end
   end
 
@@ -39,9 +47,11 @@ namespace :deploy do
   desc 'upload important files'
   task :upload do
     on roles(:app) do |host|
-      execute :mkdir, '-p', "#{shared_path}/config"
+      as "ubuntu" do 
+      execute :sudo, :mkdir, '-p', "#{shared_path}/config"
       upload!('config/database.yml',"#{shared_path}/config/database.yml")
       upload!('config/secrets.yml',"#{shared_path}/config/secrets.yml")
+      end
     end
   end
 
@@ -50,7 +60,9 @@ namespace :deploy do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
       # Here we can do anything such as:
       within release_path do
-        execute :rm, '-rf', release_path.join('tmp/cache')
+        as "ubuntu" do
+        execute :sudo, :rm, '-rf', release_path.join('tmp/cache')
+        end
       end
     end
   end
