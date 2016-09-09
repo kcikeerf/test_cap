@@ -1,0 +1,40 @@
+/home/ubuntu/.rvm/rubies/ruby-2.1.8/bin/ruby -r ./siteconf20160909-25435-rxz6i1.rb extconf.rb
+checking for main() in -lpthread... yes
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+compiling value.cc
+compiling trycatch.cc
+compiling external.cc
+compiling heap.cc
+compiling constants.cc
+compiling accessor.cc
+compiling primitive.cc
+compiling function.cc
+compiling context.cc
+compiling message.cc
+compiling invocation.cc
+compiling signature.cc
+compiling script.cc
+compiling handles.cc
+compiling template.cc
+compiling object.cc
+compiling backref.cc
+compiling rr.cc
+compiling date.cc
+compiling string.cc
+compiling exception.cc
+compiling locker.cc
+compiling gc.cc
+compiling stack.cc
+compiling array.cc
+compiling constraints.cc
+compiling init.cc
+compiling v8.cc
+linking shared-object v8/init.so
+
+make "DESTDIR=" install
+/usr/bin/install -m 0755 init.so ./.gem.20160909-25435-1osgqes/v8
+installing default init libraries

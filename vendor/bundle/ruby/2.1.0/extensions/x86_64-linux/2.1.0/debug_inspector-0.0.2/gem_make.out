@@ -1,0 +1,12 @@
+/home/ubuntu/.rvm/rubies/ruby-2.1.8/bin/ruby -r ./siteconf20160909-25166-19rfz29.rb extconf.rb
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+compiling debug_inspector.c
+linking shared-object debug_inspector.so
+
+make "DESTDIR=" install
+/usr/bin/install -m 0755 debug_inspector.so ./.gem.20160909-25166-1v90j6f
+installing default debug_inspector libraries

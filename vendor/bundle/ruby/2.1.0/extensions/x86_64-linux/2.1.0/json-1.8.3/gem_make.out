@@ -1,0 +1,10 @@
+/home/ubuntu/.rvm/rubies/ruby-2.1.8/bin/ruby -r ./siteconf20160909-12819-1ei6qkp.rb extconf.rb
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+make: Nothing to be done for `all'.
+
+make "DESTDIR=" install
+installing default libraries
